@@ -1,0 +1,135 @@
+The user interface is split up into three main div sections that will handle
+GET Request
+GET with Request
+POST Request
+ 
+ <div class="panel panel-primary">...</div>
+ 
+Each div sections contains the HTML code which is needed for one Axios use case.
+Think of these guys as empty variables in which we'll fill it up with results
+<div class="panel-body" id="getResult1"></div>
+<div class="panel-body" id="getResult2"></div>
+<div class="panel-body" id="postResult"></div>
+
+To reference these "variables" in a JS file, you can call it by their id
+		Example: document.getElementById('getResult2');
+
+2/3 of our methods will initiate a POST request by clicking on a button:
+ 
+<button class="btn btn-primary" onclick="performGetRequest1()">Get Todos</button>
+<button class="btn btn-primary" onclick="performGetRequest2()">Get Todos</button>
+ 
+ **Side note for understanding on a deeper level
+		In "english",the line says:
+			"I have a button which has styling that is defined by btn and btn-primary. And when somebody clicks on me, since I am a button afterall, I will have to do something. I suppose I'll perform a GET Request and ask the API for whatever I need to get.
+
+			btn and btn-primary are style classes from the BOOTSTRAP library.
+
+	Both methods, performGetRequest1() and performGetRequest2(), will make use of the Axios library to initiate the GET requests and will be implemented in main.js
+
+Make a index.js and add it to that project directory...
+
+//index.js
+	
+	//METHOD 1: GET request
+	function performGetRequest1() {
+		//make a js variable to refer to the DIV element by the name of (getResult1) inside your HTML
+	 	var resultElement = document.getElementById('getResult1'); 
+	 	//sets the value of the DIV to empty.
+	 	resultElement.innerHTML = '';
+	  	//GET Request using Axios by calling this url: http://jsonplaceholder.typicode.com/todo
+	  	axios.get('http://jsonplaceholder.typicode.com/todos')
+
+	    .then(function (response) {
+	    	//If we get a respose from the call then we shall do stuff here
+	    	/*Here we set the DIV element to the response we got back from making the request as a 
+	    	///string using our function generateSuccessHTMLOutput(). We  will make this..
+	     	resultElement.innerHTML = generateSuccessHTMLOutput(response);
+	    })
+	    .catch(function (error) {
+	    	//If we aren't able to get a response and get an error, catch the error and set the DIV 
+	    	//to print out the error so we can identify the issue.
+	     	resultElement.innerHTML = generateErrorHTMLOutput(error);
+	    });   
+	}
+
+	//Printing Functions
+	//--------------------------------------------------------------------------------------------------------------
+	//converts the JSON response we get back from the REQUEST into String values that we can use.
+	function generateSuccessHTMLOutput(response) {
+	  return  '<h4>Result</h4>' + 
+	          '<h5>Status:</h5> ' + 
+	          '<pre>' + response.status + ' ' + response.statusText + '</pre>' +
+	          '<h5>Headers:</h5>' + 
+	          '<pre>' + JSON.stringify(response.headers, null, '\t') + '</pre>' + 
+	          '<h5>Data:</h5>' + 
+	          '<pre>' + JSON.stringify(response.data, null, '\t') + '</pre>'; 
+	}
+
+	//ATTEMPTS to converts the JSON response we get back from the REQUEST into String values but also prints error
+	function generateErrorHTMLOutput(error) {
+	  return  '<h4>Result</h4>' + 
+	          '<h5>Message:</h5> ' + 
+	          '<pre>' + error.message + '</pre>' +
+	          '<h5>Status:</h5> ' + 
+	          '<pre>' + error.response.status + ' ' + error.response.statusText + '</pre>' +
+	          '<h5>Headers:</h5>' + 
+	          '<pre>' + JSON.stringify(error.response.headers, null, '\t') + '</pre>' + 
+	          '<h5>Data:</h5>' + 
+	          '<pre>' + JSON.stringify(error.response.data, null, '\t') + '</pre>'; 
+	}
+
+
+	//Since this method is similiar to the previous one I commented on, try walking through
+	//the code and seeing if you can figure out what's going on
+
+	//METHOD 2: GET request w/ Parameters
+	function performGetRequest2() {
+	 	var resultElement = document.getElementById('getResult2');
+	  	var todoId = document.getElementById('todoId').value;
+	  	resultElement.innerHTML = '';
+	  
+	  	axios.get('http://jsonplaceholder.typicode.com/todos', {
+	    	params: {
+	      		id: todoId
+	    	}
+	  	})
+	  	.then(function (response) {
+	    	console.log(response);
+	    	resultElement.innerHTML = generateSuccessHTMLOutput(response);
+	  	})
+	  	.catch(function (error) {
+	     	resultElement.innerHTML = generateErrorHTMLOutput(error);
+	  	});
+	}
+
+
+	//METHODO 3: POST REQUEST
+
+	//This next line says, "go to html and find an element with an id = 'todoInputForm'. Keep our ears 
+	//open, listen, and be ready for when the FORM element is submitted. if so, call the 
+	//function performPostRequest
+	document.getElementById('todoInputForm').addEventListener('submit', performPostRequest);
+
+	//the e param basically means user input.
+	function performPostRequest(e) {
+		var resultElement = document.getElementById('postResult');
+		var todoTitle = document.getElementById('todoTitle').value;
+		resultElement.innerHTML = '';
+
+		axios.post('http://jsonplaceholder.typicode.com/todos', {
+			userId: '1',
+			title: todoTitle,
+			completed: false
+		})
+		.then(function (response) {
+			resultElement.innerHTML = generateSuccessHTMLOutput(response);
+		})
+		.catch(function (error) {
+			resultElement.innerHTML = generateErrorHTMLOutput(error);
+		});
+
+		e.preventDefault();
+	}
+
+
